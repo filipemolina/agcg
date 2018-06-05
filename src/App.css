@@ -1,0 +1,120 @@
+html,
+body {
+  width: 100%;
+  height: 100%;
+  background-color: #666;
+  overflow: hidden;
+}
+#hud {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  padding: 1em;
+  display: -ms-flexbox;
+  display: box;
+  display: flex;
+  -o-box-align: end;
+  align-items: flex-end;
+  -o-box-pack: center;
+  justify-content: center;
+  z-index: 99;
+}
+#room {
+  width: 100vw;
+  height: 100vh;
+  -webkit-perspective: 1000px;
+  -ms-perspective: 1000px;
+  perspective: 1000px;
+}
+#room #table {
+  width: 100vw;
+  height: 160vh;
+  display: -ms-flexbox;
+  display: box;
+  display: flex;
+  -o-box-direction: reverse;
+  -o-box-orient: vertical;
+  flex-direction: column-reverse;
+  -webkit-transform: rotateX(50deg) rotateZ(0deg) translate(0px, -580px);
+  transform: rotateX(50deg) rotateZ(0deg) translate(0px, -580px);
+  transition: 1s ease-in-out;
+}
+#room #table.rotate {
+  -webkit-transform: rotateX(50deg) rotateZ(180deg);
+  transform: rotateX(50deg) rotateZ(180deg);
+}
+#room #table.flat {
+  -webkit-transform: rotateX(0deg) rotateZ(0deg);
+  transform: rotateX(0deg) rotateZ(0deg);
+}
+#room #table.rotate.flat {
+  -webkit-transform: rotateX(0deg) rotateZ(180deg);
+  transform: rotateX(0deg) rotateZ(180deg);
+}
+#room #table .side {
+  display: -ms-flexbox;
+  display: box;
+  display: flex;
+  -o-box-align: center;
+  align-items: center;
+  -o-box-pack: center;
+  justify-content: center;
+  flex-direction: column-reverse;
+  height: 70%;
+  color: #fff;
+}
+#room #table #sideA {
+  background-color: #4078c0;
+}
+#room #table #sideB {
+  background-color: #bd2c00;
+  -webkit-transform: rotate(180deg);
+  transform: rotate(180deg);
+}
+
+.side div {
+  width: 194vh;
+  height: 33%;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+}
+
+.card img { max-width: 100% }
+
+.card {
+  width: 12vw !important;
+  height: 100% !important;
+  position: relative;
+  -webkit-box-shadow: 10px 10px 28px 0px rgba(0,0,0,0.75);
+  -moz-box-shadow: 10px 10px 28px 0px rgba(0,0,0,0.75);
+  box-shadow: 10px 10px 28px 0px rgba(0,0,0,0.75);
+}
+
+.qtd_icon {
+  position: absolute;
+  background-image: url(/icons/blue_circle.png);
+  width: 31% !important;
+  background-position: center;
+  background-size: cover;
+  height: 27% !important;
+  right: -4px;
+  top: -19px;
+}
+
+span.qtd_number {
+    font-size: 40px;
+    color: #2b2b2b;
+}
+
+.hand.lower {
+    position: absolute;
+    bottom: 0;
+    width: 100vw;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
