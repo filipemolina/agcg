@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import './App.css';
+import shuffle from 'shuffle-array'
 
 import Hand from './components/Hand'
 import Side from './components/Side'
@@ -89,15 +90,36 @@ class App extends Component {
 
     for(let i = 0; i < qtd; i++){
 
-      this.setState(state => ({
-        [jogador]: {
-          ...state[jogador],
-          mao: [
-            ...state[jogador].mao,
-            state[jogador].deck.pop()
-          ]
+      // Caso ainda haja cartas na compra
+      if(this.state[jogador].deck.length){
+
+        this.setState(state => ({
+          [jogador]: {
+            ...state[jogador],
+            mao: [
+              ...state[jogador].mao,
+              state[jogador].deck.pop()
+            ]
+          }
+        }))
+
+      } else {
+
+        // Caso não haja, verificar se há cartas no descarte
+        if(this.state[jogador].descarte.length){
+
+          // Se houver, embaralhar o descarte e colocar no deck
+          this.setState(state => ({
+            [jogador]: {
+              ...state[jogador],
+              deck: shuffle(state[jogador].descarte),
+              descarte: [],
+            }
+          }))
+
         }
-      }))
+
+      }
 
     }
 
@@ -140,7 +162,7 @@ class App extends Component {
     return (
       <div id="game-area">
 
-        <HUD moedas={player1.ouro} vida={player1.vida}/>
+        <HUD moedas={player1.ouro} vida={player1.vida} sacar={() => this.sacar(this.state.jogadorAtual, 1)}/>
 
         <Mercado position="left" itens={mercado} />
         <Mercado position="right" itens={mercado} />

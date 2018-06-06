@@ -2,9 +2,12 @@ import React, { Component } from 'react'
 
 class Deck extends Component {
 	render(){
+
+		const { sacar } = this.props
+
 		return(
 			<div className="deck-principal">
-				<button>Sacar</button>
+				<button onClick={sacar}>Sacar</button>
 			</div>
 		)
 	}

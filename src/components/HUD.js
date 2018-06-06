@@ -10,13 +10,13 @@ import Opcoes from './Opcoes'
 class HUD extends Component {
 	render(){
 
-		const { moedas, vida } = this.props
+		const { moedas, vida, sacar } = this.props
 
 		return(
 			<div className="hud">
 				<Moedas valor={moedas} />
 				<Vida valor={vida} />
-				<Deck />
+				<Deck sacar={sacar}/>
 				<Templo2 />
 				<Templo3 />
 				<Opcoes />
