@@ -10,6 +10,7 @@ class Hand extends Component {
 	}
 
 	angulo_geral = 5
+	margem_geral = 10
 
 	componentDidMount = () => {
 		this.setState({
@@ -20,7 +21,7 @@ class Hand extends Component {
 	// Cacula o ângulo que uma carta tem que estar virada quando está em uma mão.
 	calcularAngulos = (qtd, angulo, posicao) => {
 
-		const is_par = qtd % 2 == 0
+		const is_par = qtd % 2 === 0
 		let inicio
 
 		if(is_par)
@@ -35,12 +36,46 @@ class Hand extends Component {
 
 		const angulo_final = (inicio + posicao) * angulo
 
-		return {
-			angulo: angulo_final,
-			margem: Math.abs(angulo_final) * 2
-		}
+		return angulo_final
 
 	}
+
+	calcularMargem = (qtd, margem, posicao) => {
+
+		const is_par = qtd % 2 === 0
+		let meio
+		let distancia
+		let margem_final
+		let fator
+
+		// Calcular o meio
+		if(is_par){
+			meio = qtd / 2 - 1
+
+			// Isso deve ser feito pois uma quantidade par de cartas possui 2 "meios"
+			if(posicao > meio)
+				posicao--
+
+			// Calcular a distancia do meio
+			distancia = Math.abs(posicao - meio)
+
+			// Calcular o fator pelo qual a margem deve ser multiplicada, baseada na distância
+			// Soma de todos os números de 1 até N é (N * (N+1)) / 2
+			fator = (distancia * (distancia + 1)) / 2			
+		}
+		else {
+			meio = Math.ceil(qtd / 2) - 1
+			// Calcular a distancia do meio
+			distancia = Math.abs(posicao - meio)
+
+			// Calcular o fator pelo qual a margem deve ser multiplicada, baseada na distância
+			// Soma de todos os números de 1 até N é (N * (N+1)) / 2
+			fator = (distancia * (distancia + 1)) / 2
+		}
+
+		return fator * margem
+	}
+
 
 	// Calcula a margem superior que deve ser aplicada a cada carta
 
@@ -53,10 +88,13 @@ class Hand extends Component {
 			<div className={'hand ' + position}>
 				{cards && cards.map((card, i) => (
 					<Card 
-						name={card.nome} 
-						key={card.nome} 
-						angulo={this.calcularAngulos(qtd_cartas, this.angulo_geral, i).angulo}
-						margem={this.calcularAngulos(qtd_cartas, this.angulo_geral, i).margem}
+						nome={card.nome}
+						tipo={card.tipo}
+						key={card.nome + i} 
+						angulo={this.calcularAngulos(qtd_cartas, this.angulo_geral, i)}
+						margem={this.calcularMargem(qtd_cartas, this.margem_geral, i)}
+						enviarDaMao={this.props.enviarDaMao}
+						jogador={this.props.jogador}
 					/>
 				))}
 			</div>

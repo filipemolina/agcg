@@ -4,18 +4,22 @@ import Card from "./Card"
 class Side extends Component {
 	render(){
 
-		const { pilhas } = this.props
+		const { terreno, battlefield } = this.props
 
 		return(
 			<div className="side" id={this.props.side}>
 
-				<div className="pilha">
-					{pilhas.map(pilha => (
-						<Card name={pilha.nome} qtd={pilha.qtd} key={pilha.nome}/>
+				<div className="terreno">
+					{terreno.map(carta => (
+						<Card nome={carta.nome} />
 					))}
 				</div>
-				<div className="terreno"></div>
-				<div className="battlefield"></div>
+				<div className="battlefield">
+					{battlefield.map(carta => (
+						<Card nome={carta.nome} />
+					))}
+				</div>
+				<div className="ataque"></div>
 
       </div>
 		)
