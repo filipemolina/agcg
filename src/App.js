@@ -106,7 +106,7 @@ class App extends Component {
     return (
       <div id="game-area">
 
-        <Hand position="upper" />
+        <Hand position="upper" cards={player2.mao}/>
 
         <div id="room">
           <div id="table">
@@ -118,7 +118,7 @@ class App extends Component {
           </div>
         </div>
 
-        <Hand position="lower" cards={this.state.player1.mao} />
+        <Hand position="lower" cards={player1.mao} />
       </div>
     );
   }

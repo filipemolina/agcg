@@ -3,7 +3,7 @@ import React, { Component } from 'react'
 class Card extends Component {
 	render(){
 
-		const { name, qtd, coins } = this.props
+		const { name, qtd, coins, angulo, margem } = this.props
 
 		return(
 			<div className="card">
@@ -14,7 +14,7 @@ class Card extends Component {
 					</div>
 				)}
 
-				<img src={`/cards/${name}.png`}/>
+				<img src={`/cards/${name}.png`} style={{transform: `rotate(${angulo}deg) translate(0px, ${margem}px)`}}/>
 			</div>
 		)
 	}
