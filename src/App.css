@@ -93,10 +93,11 @@ body {
 }
 
 .card {
-  width: 12vw !important;
-  height: 100% !important;
+  width: 11vw !important;
+  height: 13vw !important;
   position: relative;
   margin-right: 7px;
+  transition: 0.2s all ease-in;
 }
 
 .qtd_icon {
@@ -169,6 +170,7 @@ span.qtd_number {
   display: flex;
   justify-content: center;
   align-items: center;
+  z-index: 10;
 }
 
 .item_quadrado .options {
@@ -328,3 +330,29 @@ button.remove {
   position: absolute;
   right: -1vw;
 }
+
+a.atacar{
+  position: absolute;
+  left: -3vh;
+  top: -9vh;
+  height: 3.3vw;
+  width: 4vw;
+  background-image: url(/icons/attack.png);
+  background-size: 4vw;
+  cursor: pointer;
+}
+
+a.virar {
+  position: absolute;
+  bottom: -6vw;
+  right: 0;
+  background-color: green;
+  width: 4vw;
+  height: 3.5vw;
+  background-image: url(/icons/tap.png);
+  background-size: 4vw;
+  border-radius: 1vw;
+  cursor: pointer;
+}
+
+.card.virado { transform: rotateZ(90deg); }

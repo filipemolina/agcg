@@ -5,7 +5,7 @@ import Item from "./Item"
 class Mercado extends Component {
 	render(){
 
-		const { position, itens } = this.props
+		const { position, itens, enviar } = this.props
 
 		const itens_mostrados = position === "left" 
 															? itens.filter((item, i) => i < 4 )
@@ -14,7 +14,7 @@ class Mercado extends Component {
 		return(
 			<div className={"mercado " + position}>
 				{itens_mostrados.map(item => (
-					<Item nome={item.nome} qtd={item.qtd} key={item.nome}/>
+					<Item nome={item.nome} qtd={item.qtd} key={item.nome} enviar={enviar}/>
 				))}
 			</div>
 		)

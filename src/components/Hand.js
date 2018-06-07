@@ -61,7 +61,7 @@ class Hand extends Component {
 
 			// Calcular o fator pelo qual a margem deve ser multiplicada, baseada na distância
 			// Soma de todos os números de 1 até N é (N * (N+1)) / 2
-			fator = (distancia * (distancia + 1)) / 2			
+			fator = (distancia * (distancia + 1)) / 2
 		}
 		else {
 			meio = Math.ceil(qtd / 2) - 1
@@ -76,6 +76,14 @@ class Hand extends Component {
 		return fator * margem
 	}
 
+	enviarCarta = (carta) => {
+
+		const { jogador } = this.props
+
+		this.props.enviarDaMao(jogador, carta.id, carta.tipo)
+
+	}
+
 
 	// Calcula a margem superior que deve ser aplicada a cada carta
 
@@ -88,13 +96,14 @@ class Hand extends Component {
 			<div className={'hand ' + position}>
 				{cards && cards.map((card, i) => (
 					<Card 
-						nome={card.nome}
-						tipo={card.tipo}
-						key={card.nome + i} 
+						carta={card}
+						key={card.id} 
 						angulo={this.calcularAngulos(qtd_cartas, this.angulo_geral, i)}
 						margem={this.calcularMargem(qtd_cartas, this.margem_geral, i)}
-						enviarDaMao={this.props.enviarDaMao}
-						jogador={this.props.jogador}
+						acoes={{
+							enviar: () => this.enviarCarta(card),
+							descartar: () => this.props.descartar('mao', card.id)
+						}}
 					/>
 				))}
 			</div>

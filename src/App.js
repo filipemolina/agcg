@@ -7,6 +7,9 @@ import Side from './components/Side'
 import Mercado from './components/Mercado'
 import HUD from './components/HUD'
 
+import * as helpers from './helpers'
+import uuidv1 from 'uuid/v1'
+
 class App extends Component {
 
   state = {
@@ -22,22 +25,23 @@ class App extends Component {
         { nome: "distracao",  qtd: 4, tipo: 'evento' },
       ],
       deck: [
-        { nome: "templo", tipo: 'terreno' },
-        { nome: "templo", tipo: 'terreno' },
-        { nome: "templo", tipo: 'terreno' },
-        { nome: "templo", tipo: 'terreno' },
-        { nome: "templo", tipo: 'terreno' },
-        { nome: "templo", tipo: 'terreno' },
-        { nome: "templo", tipo: 'terreno' },
-        { nome: "templo", tipo: 'terreno' },
-        { nome: "templo", tipo: 'terreno' },
-        { nome: "templo", tipo: 'terreno' },
+        { nome: "templo",     tipo: 'terreno', id: uuidv1() },
+        { nome: "templo",     tipo: 'terreno', id: uuidv1() },
+        { nome: "templo",     tipo: 'terreno', id: uuidv1() },
+        { nome: "templo",     tipo: 'terreno', id: uuidv1() },
+        { nome: "templo",     tipo: 'terreno', id: uuidv1() },
+        { nome: "templo",     tipo: 'terreno', id: uuidv1() },
+        { nome: "templo",     tipo: 'terreno', id: uuidv1() },
+        { nome: "reforcar",   tipo: 'evento',  id: uuidv1() },
+        { nome: "esconjurar", tipo: 'evento',  id: uuidv1() },
+        { nome: "distracao",  tipo: 'evento',  id: uuidv1() },
       ],
       descarte: [],
       cemiterio: [],
       mao: [],
       terreno: [],
       battlefield: [],
+      ataque: [],
       ouro: 0,
       vida: 20,
       nome: "player1",
@@ -54,22 +58,23 @@ class App extends Component {
         { nome: "furia_de_batalha", qtd: 4, tipo: 'evento' },
       ],
       deck: [
-        { nome: "templo", tipo: 'terreno' },
-        { nome: "templo", tipo: 'terreno' },
-        { nome: "templo", tipo: 'terreno' },
-        { nome: "templo", tipo: 'terreno' },
-        { nome: "templo", tipo: 'terreno' },
-        { nome: "templo", tipo: 'terreno' },
-        { nome: "templo", tipo: 'terreno' },
-        { nome: "templo", tipo: 'terreno' },
-        { nome: "templo", tipo: 'terreno' },
-        { nome: "templo", tipo: 'terreno' },
+        { nome: "templo", tipo: 'terreno', id: uuidv1() },
+        { nome: "templo", tipo: 'terreno', id: uuidv1() },
+        { nome: "templo", tipo: 'terreno', id: uuidv1() },
+        { nome: "templo", tipo: 'terreno', id: uuidv1() },
+        { nome: "templo", tipo: 'terreno', id: uuidv1() },
+        { nome: "templo", tipo: 'terreno', id: uuidv1() },
+        { nome: "templo", tipo: 'terreno', id: uuidv1() },
+        { nome: "templo", tipo: 'terreno', id: uuidv1() },
+        { nome: "templo", tipo: 'terreno', id: uuidv1() },
+        { nome: "templo", tipo: 'terreno', id: uuidv1() },
       ],
       descarte: [],
       cemiterio: [],
       mao: [],
       terreno: [],
       battlefield: [],
+      ataque: [],
       ouro: 0,
       vida: 20,
       nome: "player2",
@@ -82,7 +87,23 @@ class App extends Component {
 
   componentDidMount = () => {
 
+    const { jogadorAtual } = this.state
+
+    // Embaralhar o deck inicial do jogador
+    this.embaralhar(jogadorAtual, 'deck')
+
     this.sacar("player1", 5);
+
+  }
+
+  embaralhar = (jogador, deck) => {
+
+    this.setState(state => ({
+      [jogador]: {
+        ...state[jogador],
+        [deck]: shuffle(state[jogador][deck])
+      }
+    }))
 
   }
 
@@ -109,13 +130,22 @@ class App extends Component {
         if(this.state[jogador].descarte.length){
 
           // Se houver, embaralhar o descarte e colocar no deck
+          // Após isso, no callback, comprar uma carta
           this.setState(state => ({
             [jogador]: {
               ...state[jogador],
               deck: shuffle(state[jogador].descarte),
-              descarte: [],
+              descarte: []
             }
-          }))
+          }), () => this.setState(state => ({
+            [jogador]: {
+              ...state[jogador],
+              mao: [
+                ...state[jogador].mao,
+                state[jogador].deck.pop()
+              ]
+            }
+          })))
 
         }
 
@@ -125,33 +155,89 @@ class App extends Component {
 
   }
 
-  enviarDaMao = (jogador, nome, tipo) => {
+  enviarDaMao = (jogador, id, tipo) => {
 
-    let mao = this.state[jogador].mao
-    let indice = mao.findIndex(item => item.nome === nome)
-    let destino
+    const mao = this.state[jogador].mao
 
-    if(tipo === 'criatura')
-      destino = 'battlefield'
-    else if(tipo === 'evento')
-      destino = 'descarte'
-    else
-      destino = 'terreno'
+    const destino = helpers.selecionaDestino(tipo)
 
     this.setState(state => ({
       [jogador] : {
         ...state[jogador],
-        mao: state[jogador].mao.filter((item, i) => i !== indice ),
+        mao: state[jogador].mao.filter(item => item.id !== id ),
         [destino] : [
           ...state[jogador][destino],
-          { nome, tipo }
+          state[jogador].mao.find(item => item.id === id )
         ]
       }
     }))
   }
 
-  enviarDaLoja = (jogador, nome, tipo) => {
+  descartar = (origem, id) => {
+
+    const { jogadorAtual } = this.state
+
+    this.setState(state => ({
+      [jogadorAtual]: {
+        ...state[jogadorAtual],
+        [origem]: state[jogadorAtual][origem].filter(item => item.id !== id),
+        descarte: [
+          ...state[jogadorAtual].descarte,
+          state[jogadorAtual][origem].find(item => item.id === id)
+        ]
+      }
+    }))
+
+  }
+
+  enviarDaLoja = (nome) => {
+
+    const jogador = this.state.jogadorAtual
+    const mercado = this.state[jogador].mercado
+    const indice = mercado.findIndex(item => item.nome === nome)
+    const carta = this.state[jogador].mercado[indice]
+    const destino = helpers.selecionaDestino(carta.tipo)
+
+    if(carta.qtd > 0){
+
+      this.setState(state => ({
+        [jogador]: {
+          ...state[jogador],
+          mercado: state[jogador].mercado.map(item => {
+            if(item.nome === nome)
+              item.qtd--
+            return item
+          }),
+          [destino]: [
+            ...state[jogador][destino],
+            { nome: carta.nome, tipo: carta.tipo, id: uuidv1() }
+          ]
+
+        }
+      }))
+
+    }
     
+  }
+
+  atacar = id => {
+
+    const jogador = this.state.jogadorAtual
+
+    this.setState(state => ({
+      [jogador]: {
+        ...state[jogador],
+        battlefield: state[jogador].battlefield.filter(item => item.id !== id),
+        ataque: [
+          ...state[jogador].ataque,
+          state[jogador].battlefield.find(item => item.id === id)
+        ]
+      }
+    }))
+  }
+
+  virar = id => {
+    ////////////////////////////////////////////////// Fazer a carta virar!
   }
 
   mudarVida = (jogador, operacao, passo) => {
@@ -226,17 +312,35 @@ class App extends Component {
           reduzirMoedas={() => this.mudarMoedas(jogadorAtual, 'remove', 1)}
         />
 
-        <Mercado position="left" itens={mercado} />
-        <Mercado position="right" itens={mercado} />
+        <Mercado position="left" itens={mercado} enviar={this.enviarDaLoja} />
+        <Mercado position="right" itens={mercado} enviar={this.enviarDaLoja}/>
 
-        <Hand position="lower" cards={player1.mao} enviarDaMao={this.enviarDaMao} jogador={jogadorAtual}/>
+        <Hand 
+          position="lower" 
+          cards={player1.mao} 
+          enviarDaMao={this.enviarDaMao} 
+          jogador={jogadorAtual}
+          descartar={this.descartar}
+        />
 
         <div id="room">
           <div id="table">
 
-            <Side side="sideA" terreno={player1.terreno} battlefield={player1.battlefield} />
+            <Side 
+              side="sideA" 
+              terreno={this.state.player1.terreno} 
+              battlefield={this.state.player1.battlefield}
+              ataque={this.state.player1.ataque}
+              descartar={this.descartar}
+              atacar={this.atacar}
+            />
 
-            <Side side="sideB" terreno={player2.terreno} battlefield={player2.battlefield}  />
+            <Side 
+              side="sideB" 
+              terreno={this.state.player2.terreno} 
+              battlefield={this.state.player2.battlefield}
+              ataque={this.state.player2.ataque}
+            />
 
           </div>
         </div>
