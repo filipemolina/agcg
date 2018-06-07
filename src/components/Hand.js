@@ -37,7 +37,7 @@ class Hand extends Component {
 
 		return {
 			angulo: angulo_final,
-			margem: Math.abs(angulo_final) * 2
+			margem: Math.abs(angulo_final) * Math.abs(angulo_final)
 		}
 
 	}
