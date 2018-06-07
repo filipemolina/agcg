@@ -40,6 +40,8 @@ body {
   -webkit-transform: rotateX(50deg) rotateZ(0deg) translate(0px, -580px);
   transform: rotateX(50deg) rotateZ(0deg) translate(0px, -580px);
   transition: 1s ease-in-out;
+  background-image: url("/bg/3.jpg");
+  background-size: 253px;
 }
 #room #table.rotate {
   -webkit-transform: rotateX(50deg) rotateZ(180deg);
@@ -66,10 +68,9 @@ body {
   color: #fff;
 }
 #room #table #sideA {
-  background-color: #4078c0;
+  /*background-image: url("/bg/3.jpg");*/
 }
 #room #table #sideB {
-  background-color: #bd2c00;
   -webkit-transform: rotate(180deg);
   transform: rotate(180deg);
 }
@@ -80,15 +81,15 @@ body {
   flex-shrink: 0;
   display: flex;
   flex-direction: row;
-  justify-content: space-around;
+  justify-content: center;
 }
 
 .card img { 
   max-width: 100%; 
   border-radius: 5px;
-  -webkit-box-shadow: 10px 10px 28px 0px rgba(0,0,0,0.75);
-  -moz-box-shadow: 10px 10px 28px 0px rgba(0,0,0,0.75);
-  box-shadow: 10px 10px 28px 0px rgba(0,0,0,0.75);
+  -webkit-box-shadow: -10px 10px 28px 0px rgba(0,0,0,0.75);
+  -moz-box-shadow: -10px 10px 28px 0px rgba(0,0,0,0.75);
+  box-shadow: -10px 10px 28px 0px rgba(0,0,0,0.75);
 }
 
 .card {
@@ -101,18 +102,23 @@ body {
 .qtd_icon {
   position: absolute;
   background-image: url(/icons/blue_circle.png);
-  width: 31% !important;
+  width: 6vh !important;
   background-position: center;
   background-size: cover;
-  height: 29% !important;
-  right: -4px;
-  top: -19px;
+  height: 6vh !important;
+  right: -11px;
+  top: -9px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 span.qtd_number {
     font-size: 40px;
     color: #2b2b2b;
 }
+
+.hand { z-index: 10; }
 
 .hand.lower {
     position: absolute;
@@ -126,4 +132,199 @@ span.qtd_number {
 
 .hand .card{
   margin-right: 0;
+}
+
+.mercado {
+  position: fixed;
+    height: 80vh;
+    width: 10vw;
+    z-index: 20;
+    top: 0;
+    display: -ms-flexbox;
+    display: flex;
+    -ms-flex-direction: column;
+    flex-direction: column;
+    -ms-flex-pack: distribute;
+    justify-content: space-around;
+    -ms-flex-align: center;
+    align-items: center;
+    background-image: url(/bg/3.jpg);
+    background-size: contain;
+    padding: 1vh;
+    border-radius: 15px;
+    box-shadow: black 4px 6px 25px;
+}
+
+.mercado.right { right: 0; }
+
+.mercado .item_quadrado {
+    width: 18vh;
+    height: 18vh;
+    background-size: 19vh;
+    border-radius: 10px;
+    box-shadow: black 5px 5px 5px;
+}
+
+.options {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.item_quadrado .options {
+    position: absolute;
+    bottom: 0;
+    display: none;
+}
+
+.item_quadrado:hover .options { display: block }
+
+.options button { cursor: pointer; }
+
+.options button.enviar {
+    background color:;
+    background: #9ecc9e;
+    color: white;
+    border-color: #98c398;
+    border-radius: 5px;
+}
+
+.options button.reservar {
+    background: #8766d6;
+    color: white;
+    border-color: #7557bb;
+    border-radius: 5px;
+}
+
+.hud {
+  width: 70vw;
+  height: 10vh;
+  position: fixed;
+  left: 50%;
+  margin-left: -35vw;
+  border-bottom-left-radius: 10px;
+  border-bottom-right-radius: 10px;
+  background-color: rgba(255,255,255,0.7);
+  box-shadow: #000 -11px 3px 78px;
+  z-index: 20;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+}
+
+.hud .moedas {
+    height: 8vh;
+    width: 8vh;
+    background-color: #beb12e;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 33px;
+    color: white;
+    position: relative;
+}
+
+.hud .vida {
+    background-image: url(/bg/vida.png);
+    height: 8vh;
+    width: 7vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-size: 99%;
+    color: white;
+    font-size: 30px;
+    position: relative;
+}
+
+.vida .add{
+  left: -2vw
+}
+
+.vida .remove{
+  right: -2vw;
+}
+
+.hud .deck-principal {
+  background-image: url(/cards/back.png);
+  width: 13vh;
+  height: 9vh;
+  background-size: 14vh;
+  background-position: -3px -7px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.hud .templo-2 {
+    background-image: url(/cards/templo2.png);
+    width: 13vh;
+    height: 9vh;
+    background-size: cover;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.hud .templo-3 {
+    background-image: url(/cards/templo3.png);
+    width: 13vh;
+    height: 9vh;
+    background-size: cover;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.deck-principal button,
+.templo-2 button,
+.templo-3 button {
+  display: none;
+  cursor: pointer;
+}
+
+.deck-principal:hover button,
+.templo-2:hover button,
+.templo-3:hover button {
+  display: block;
+}
+
+
+.hud .opcoes {
+  display: flex;
+  flex-direction: column;
+}
+
+.opcoes button { cursor: pointer; }
+
+.card .options {
+  position: absolute;
+  top: 40px;
+  display: none;
+}
+
+.card:hover .options {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+
+.options button.descartar {
+  background-color: #d41b1b;
+  color: white;
+  border-color: #f36464;
+  border-radius: 5px;
+}
+
+button.add {
+  position: absolute;
+  left: -1vw;
+}
+
+button.remove {
+  position: absolute;
+  right: -1vw;
 }

@@ -1,34 +1,37 @@
 import React, { Component } from 'react';
 import './App.css';
+import shuffle from 'shuffle-array'
 
 import Hand from './components/Hand'
 import Side from './components/Side'
+import Mercado from './components/Mercado'
+import HUD from './components/HUD'
 
 class App extends Component {
 
   state = {
     player1: {
-      pilhas: [
-        { nome: "devoto",     qtd: 4 },
-        { nome: "mago",       qtd: 4 },
-        { nome: "lanceiro",   qtd: 4 },
-        { nome: "cavaleiro",  qtd: 4 },
-        { nome: "divinacao",  qtd: 4 },
-        { nome: "reforcar",   qtd: 4 },
-        { nome: "esconjurar", qtd: 4 },
-        { nome: "distracao",  qtd: 4 },
+      mercado: [
+        { nome: "devoto",     qtd: 4, tipo: 'criatura' },
+        { nome: "mago",       qtd: 4, tipo: 'criatura' },
+        { nome: "lanceiro",   qtd: 4, tipo: 'criatura' },
+        { nome: "cavaleiro",  qtd: 4, tipo: 'criatura' },
+        { nome: "divinacao",  qtd: 4, tipo: 'evento' },
+        { nome: "reforcar",   qtd: 4, tipo: 'evento' },
+        { nome: "esconjurar", qtd: 4, tipo: 'evento' },
+        { nome: "distracao",  qtd: 4, tipo: 'evento' },
       ],
       deck: [
-        { nome: "templo" },
-        { nome: "templo" },
-        { nome: "templo" },
-        { nome: "templo" },
-        { nome: "templo" },
-        { nome: "templo" },
-        { nome: "templo" },
-        { nome: "templo" },
-        { nome: "templo" },
-        { nome: "templo" },
+        { nome: "templo", tipo: 'terreno' },
+        { nome: "templo", tipo: 'terreno' },
+        { nome: "templo", tipo: 'terreno' },
+        { nome: "templo", tipo: 'terreno' },
+        { nome: "templo", tipo: 'terreno' },
+        { nome: "templo", tipo: 'terreno' },
+        { nome: "templo", tipo: 'terreno' },
+        { nome: "templo", tipo: 'terreno' },
+        { nome: "templo", tipo: 'terreno' },
+        { nome: "templo", tipo: 'terreno' },
       ],
       descarte: [],
       cemiterio: [],
@@ -36,29 +39,31 @@ class App extends Component {
       terreno: [],
       battlefield: [],
       ouro: 0,
+      vida: 20,
+      nome: "player1",
     },
     player2: {
-      pilhas: [
-        { nome: "guerreiro",        qtd: 4 },
-        { nome: "protetor",         qtd: 4 },
-        { nome: "cruzado",          qtd: 4 },
-        { nome: "heroi",            qtd: 4 },
-        { nome: "gigante",          qtd: 4 },
-        { nome: "raio",             qtd: 4 },
-        { nome: "ataque_berserker", qtd: 4 },
-        { nome: "furia_de_batalha", qtd: 4 },
+      mercado: [
+        { nome: "guerreiro",        qtd: 4, tipo: 'criatura' },
+        { nome: "protetor",         qtd: 4, tipo: 'criatura' },
+        { nome: "cruzado",          qtd: 4, tipo: 'criatura' },
+        { nome: "heroi",            qtd: 4, tipo: 'criatura' },
+        { nome: "gigante",          qtd: 4, tipo: 'criatura' },
+        { nome: "raio",             qtd: 4, tipo: 'evento' },
+        { nome: "ataque_berserker", qtd: 4, tipo: 'evento' },
+        { nome: "furia_de_batalha", qtd: 4, tipo: 'evento' },
       ],
       deck: [
-        { nome: "templo" },
-        { nome: "templo" },
-        { nome: "templo" },
-        { nome: "templo" },
-        { nome: "templo" },
-        { nome: "templo" },
-        { nome: "templo" },
-        { nome: "templo" },
-        { nome: "templo" },
-        { nome: "templo" },
+        { nome: "templo", tipo: 'terreno' },
+        { nome: "templo", tipo: 'terreno' },
+        { nome: "templo", tipo: 'terreno' },
+        { nome: "templo", tipo: 'terreno' },
+        { nome: "templo", tipo: 'terreno' },
+        { nome: "templo", tipo: 'terreno' },
+        { nome: "templo", tipo: 'terreno' },
+        { nome: "templo", tipo: 'terreno' },
+        { nome: "templo", tipo: 'terreno' },
+        { nome: "templo", tipo: 'terreno' },
       ],
       descarte: [],
       cemiterio: [],
@@ -66,9 +71,13 @@ class App extends Component {
       terreno: [],
       battlefield: [],
       ouro: 0,
+      vida: 20,
+      nome: "player2",
     },
     jogadorAtual: "player1",
     oponente: "player2",
+    templo2: 10,
+    templo3: 10,
   }
 
   componentDidMount = () => {
@@ -81,44 +90,157 @@ class App extends Component {
 
     for(let i = 0; i < qtd; i++){
 
-      this.setState(state => ({
-        [jogador]: {
-          ...state[jogador],
-          mao: [
-            ...state[jogador].mao,
-            state[jogador].deck.pop()
-          ]
+      // Caso ainda haja cartas na compra
+      if(this.state[jogador].deck.length){
+
+        this.setState(state => ({
+          [jogador]: {
+            ...state[jogador],
+            mao: [
+              ...state[jogador].mao,
+              state[jogador].deck.pop()
+            ]
+          }
+        }))
+
+      } else {
+
+        // Caso não haja, verificar se há cartas no descarte
+        if(this.state[jogador].descarte.length){
+
+          // Se houver, embaralhar o descarte e colocar no deck
+          this.setState(state => ({
+            [jogador]: {
+              ...state[jogador],
+              deck: shuffle(state[jogador].descarte),
+              descarte: [],
+            }
+          }))
+
         }
-      }))
+
+      }
 
     }
 
   }
 
+  enviarDaMao = (jogador, nome, tipo) => {
+
+    let mao = this.state[jogador].mao
+    let indice = mao.findIndex(item => item.nome === nome)
+    let destino
+
+    if(tipo === 'criatura')
+      destino = 'battlefield'
+    else if(tipo === 'evento')
+      destino = 'descarte'
+    else
+      destino = 'terreno'
+
+    this.setState(state => ({
+      [jogador] : {
+        ...state[jogador],
+        mao: state[jogador].mao.filter((item, i) => i !== indice ),
+        [destino] : [
+          ...state[jogador][destino],
+          { nome, tipo }
+        ]
+      }
+    }))
+  }
+
+  enviarDaLoja = (jogador, nome, tipo) => {
+    
+  }
+
+  mudarVida = (jogador, operacao, passo) => {
+
+
+    if(operacao === 'add'){
+
+      this.setState(state => ({
+        [jogador]: {
+          ...state[jogador],
+          vida: state[jogador].vida + passo
+        }
+      }))
+
+    } else {
+
+      if(this.state[jogador].vida - passo >= 0){
+
+        this.setState(state => ({
+          [jogador]: {
+            ...state[jogador],
+            vida: state[jogador].vida - passo
+          }
+        }))
+
+      }
+
+    }
+
+  }
+
+  mudarMoedas = (jogador, operacao, passo) => {
+    // Caso a operação seja de adição
+    if(operacao === 'add'){
+      this.setState(state => ({
+        [jogador]: {
+          ...state[jogador],
+          ouro: state[jogador].ouro + passo
+        }
+      }))
+    } else {
+      //Testar se essa diminuição levaria a um valor menor do que zero.
+      if(this.state[jogador].ouro - passo >= 0){
+        this.setState(state => ({
+          [jogador]: {
+            ...state[jogador],
+            ouro: state[jogador].ouro - passo
+          }
+        }))
+      }
+    }
+  }
+
   render() {
+    
+    const { jogadorAtual } = this.state
 
-    const player1 = this.state[this.state.jogadorAtual];
+    const player1 = this.state[jogadorAtual];
     const player2 = this.state[this.state.oponente];
-
-    console.log("MAO", this.state.player1.mao)
-    console.log("")
+    const mercado = player1.mercado
 
     return (
       <div id="game-area">
 
-        <Hand position="upper" cards={player2.mao}/>
+        <HUD 
+          moedas={player1.ouro} 
+          vida={player1.vida} 
+          sacar={() => this.sacar(jogadorAtual, 1)}
+          aumentarVida={() => this.mudarVida(jogadorAtual, 'add', 1)}
+          reduzirVida={() => this.mudarVida(jogadorAtual, 'remove', 1)}
+          aumentarMoedas={() => this.mudarMoedas(jogadorAtual, 'add', 1)}
+          reduzirMoedas={() => this.mudarMoedas(jogadorAtual, 'remove', 1)}
+        />
+
+        <Mercado position="left" itens={mercado} />
+        <Mercado position="right" itens={mercado} />
+
+        <Hand position="lower" cards={player1.mao} enviarDaMao={this.enviarDaMao} jogador={jogadorAtual}/>
 
         <div id="room">
           <div id="table">
 
-            <Side side="sideA" pilhas={player1.pilhas} />
+            <Side side="sideA" terreno={player1.terreno} battlefield={player1.battlefield} />
 
-            <Side side="sideB" pilhas={player2.pilhas} />
+            <Side side="sideB" terreno={player2.terreno} battlefield={player2.battlefield}  />
 
           </div>
         </div>
-
-        <Hand position="lower" cards={player1.mao} />
+        
       </div>
     );
   }
