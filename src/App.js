@@ -12,6 +12,12 @@ import uuidv1 from 'uuid/v1'
 
 class App extends Component {
 
+  //////////////////////////////////////////////////////////////////
+  // Quando uma carta no mercado chegar a 0 desabilitar os botões
+  // Quando uma carta atacar, virar automaticamente
+  // Quando uma carta for descartada, desvirar
+  // Implementar o Zoom quando der hover em uma carta do mercado
+
   state = {
     player1: {
       mercado: [
@@ -79,6 +85,10 @@ class App extends Component {
       vida: 20,
       nome: "player2",
     },
+    templos: [
+      { nome: "templo2", tipo: "terreno", qtd: 10 },
+      { nome: "templo3", tipo: "terreno", qtd: 10 },
+    ],
     jogadorAtual: "player1",
     oponente: "player2",
     templo2: 10,
@@ -190,6 +200,46 @@ class App extends Component {
 
   }
 
+  reservar = (origem, nome, tipo) => {
+
+    const { jogadorAtual } = this.state
+
+    if(origem === 'mercado')
+    {
+      this.setState(state => ({
+        [jogadorAtual]: {
+          ...state[jogadorAtual],
+          mercado: state[jogadorAtual].mercado.map(item => {
+            if(item.nome === nome)
+              item.qtd--
+            return item
+          }),
+          descarte: [
+            ...state[jogadorAtual].descarte,
+            { nome, tipo, id: uuidv1(), coins: 0}
+          ]
+        }
+      })) 
+    } else {
+      this.setState(state => ({
+        ...state,
+        templos: state.templos.map(item => {
+          if(item.nome === nome)
+            item.qtd--
+          return item
+        }),
+        [jogadorAtual]: {
+          ...state[jogadorAtual],
+          descarte: [
+            ...state[jogadorAtual].descarte,
+            { nome, tipo, id: uuidv1() }
+          ]
+        }
+      }))
+    }
+
+  }
+
   enviarDaLoja = (nome) => {
 
     const jogador = this.state.jogadorAtual
@@ -210,7 +260,7 @@ class App extends Component {
           }),
           [destino]: [
             ...state[jogador][destino],
-            { nome: carta.nome, tipo: carta.tipo, id: uuidv1() }
+            { nome: carta.nome, tipo: carta.tipo, id: uuidv1(), coins: 0 }
           ]
 
         }
@@ -218,6 +268,34 @@ class App extends Component {
 
     }
     
+  }
+
+  enviarTemploMaior = nome => {
+
+    const { jogadorAtual, templos } = this.state
+
+    const templo = this.state.templos.find(item => item.nome === nome)
+
+    if(templo.qtd - 1 >= 0){
+
+      this.setState(state => ({
+        ...state,
+        templos: state.templos.map(item => {
+          if(item.nome === nome)
+            item.qtd--
+          return item
+        }),
+        [jogadorAtual]: {
+          ...state[jogadorAtual],
+          terreno: [
+            ...state[jogadorAtual].terreno,
+            { nome, tipo: 'terreno', id: uuidv1() }
+          ]
+        }
+      }))
+
+    }
+
   }
 
   atacar = id => {
@@ -236,8 +314,42 @@ class App extends Component {
     }))
   }
 
-  virar = id => {
-    ////////////////////////////////////////////////// Fazer a carta virar!
+  voltar = id => {
+
+    const jogador = this.state.jogadorAtual
+
+    this.setState(state => ({
+      [jogador]:{
+        ...state[jogador],
+        ataque: state[jogador].ataque.filter(item => item.id !== id),
+        battlefield: [
+          ...state[jogador].battlefield,
+          state[jogador].ataque.find(item => item.id === id)
+        ]
+      }
+    }))
+
+  }
+
+  virar = (origem, id) => {
+
+    const { jogadorAtual } = this.state
+    
+    this.setState(state => ({
+      [jogadorAtual]: {
+        ...state[jogadorAtual],
+        [origem]: state[jogadorAtual][origem].map(carta => {
+          if(carta.id === id){
+            if(carta.virada)
+              carta.virada = false
+            else
+              carta.virada = true
+          }
+          return carta
+        })
+      }
+    }))
+
   }
 
   mudarVida = (jogador, operacao, passo) => {
@@ -291,9 +403,44 @@ class App extends Component {
     }
   }
 
+  mudarMoedasCarta = (operacao, passo, origem, id) => {
+      
+    const { jogadorAtual } = this.state
+
+    const carta = this.state[jogadorAtual][origem].find(item => item.id === id)
+
+    console.log(this.state[jogadorAtual][origem])
+
+    if(operacao === 'add'){
+      this.setState(state => ({
+        [jogadorAtual]: {
+          ...state[jogadorAtual],
+          [origem]: state[jogadorAtual][origem].map(item => {
+            if(item.id === id)
+              item.coins += passo
+            return item
+          })
+        }
+      }))
+    } else {
+      if(carta.coins && carta.coins - 1 >= 0){
+        this.setState(state => ({
+          [jogadorAtual]: {
+            ...state[jogadorAtual],
+            [origem]: state[jogadorAtual][origem].map(item => {
+              if(item.id === id)
+                item.coins -= passo
+              return item
+            })
+          }
+        }))
+      }
+    }
+  }
+
   render() {
     
-    const { jogadorAtual } = this.state
+    const { jogadorAtual, templos } = this.state
 
     const player1 = this.state[jogadorAtual];
     const player2 = this.state[this.state.oponente];
@@ -312,8 +459,23 @@ class App extends Component {
           reduzirMoedas={() => this.mudarMoedas(jogadorAtual, 'remove', 1)}
         />
 
-        <Mercado position="left" itens={mercado} enviar={this.enviarDaLoja} />
-        <Mercado position="right" itens={mercado} enviar={this.enviarDaLoja}/>
+        <Mercado 
+          position="left" 
+          itens={mercado} 
+          enviar={this.enviarDaLoja} 
+          enviarTemplo={this.enviarTemploMaior} 
+          templo={templos[0]}
+          reservar={this.reservar}
+          />
+
+        <Mercado 
+          position="right" 
+          itens={mercado} 
+          enviar={this.enviarDaLoja} 
+          enviarTemplo={this.enviarTemploMaior} 
+          templo={templos[1]} 
+          reservar={this.reservar}
+          />
 
         <Hand 
           position="lower" 
@@ -333,6 +495,9 @@ class App extends Component {
               ataque={this.state.player1.ataque}
               descartar={this.descartar}
               atacar={this.atacar}
+              virar={this.virar}
+              voltar={this.voltar}
+              mudarMoedas={this.mudarMoedasCarta}
             />
 
             <Side 

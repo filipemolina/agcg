@@ -12,6 +12,14 @@ class Item extends Component {
 
 	}
 
+	reservarCarta = () => {
+
+		const { nome, tipo, reservar } = this.props
+
+		reservar(nome, tipo)
+
+	}
+
 	render(){
 
 		const { nome, qtd, enviar } = this.props
@@ -22,7 +30,8 @@ class Item extends Component {
 					<span className="qtd_number">{qtd}</span>
 				</div>
 				<Menu acoes={{
-					enviar: this.enviarCarta
+					enviar: this.enviarCarta,
+					reservar: this.reservarCarta
 				}}/>
 			</div>
 		)

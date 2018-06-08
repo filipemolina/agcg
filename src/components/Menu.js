@@ -3,7 +3,7 @@ import React, { Component } from 'react'
 class Menu extends Component {
 	render(){
 
-		const { enviar, reservar, descartar, virar, atacar } = this.props.acoes
+		const { enviar, reservar, descartar, virar, atacar, voltar } = this.props.acoes
 
 		return(
 			<div className="options">
@@ -12,6 +12,7 @@ class Menu extends Component {
 				{descartar && (<button className="descartar" onClick={descartar}>Descartar  </button> )}
 				{virar     && (<a className="virar" onClick={virar}></a> )}
 				{atacar    && (<a className="atacar" onClick={atacar}></a>)}
+				{voltar    && (<a className="voltar" onClick={voltar}></a>)}
 			</div>
 		)
 	}

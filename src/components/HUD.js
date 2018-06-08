@@ -25,8 +25,6 @@ class HUD extends Component {
 				<Moedas valor={moedas} aumentar={aumentarMoedas} reduzir={reduzirMoedas} />
 				<Vida valor={vida} aumentar={aumentarVida} reduzir={reduzirVida}/>
 				<Deck sacar={sacar}/>
-				<Templo2 />
-				<Templo3 />
 				<Opcoes />
 			</div>
 		)
